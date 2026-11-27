@@ -1,0 +1,828 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Javier Gómez Piovano</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /*
+    Layout concept: one long vertical scroll — a "control deck" for a technical
+    leader. A live neural-network canvas sits behind the hero (the literal
+    subject: AI-driven engineering). Sections are quiet, high-contrast panels;
+    the accent gradient (violet → cyan) is the only loud thing on the page,
+    used for the name, section eyebrows and the network nodes — everything
+    else stays disciplined so the accent keeps its charge.
+    Dark-only by design: a control-room palette, not a toggle.
+  */
+  :root{
+    --bg:#07080d;
+    --bg-panel:#0d0f18;
+    --bg-panel-2:#12141f;
+    --fg:#eef0fa;
+    --fg-muted:#9aa0bd;
+    --fg-faint:#5d6280;
+    --accent:#8b7bff;
+    --accent-2:#2fe0d8;
+    --warn:#ff8a65;
+    --ok:#4ade80;
+    --border:rgba(238,240,250,0.09);
+    --border-strong:rgba(238,240,250,0.16);
+    --font-display:'Unbounded', 'Arial Narrow', sans-serif;
+    --font-body:'IBM Plex Sans', 'Segoe UI', sans-serif;
+    --font-mono:'IBM Plex Mono', 'SF Mono', monospace;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.6;
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+
+  a{color:inherit}
+  img{max-width:100%}
+
+  .wrap{max-width:1120px;margin:0 auto}
+  section{padding-block:clamp(56px,9vw,112px)}
+  .narrow{max-width:720px}
+
+  ::selection{background:var(--accent);color:#07080d}
+
+  /* ---------- nav ---------- */
+  nav.topbar{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:40;
+    background:rgba(7,8,13,0.72);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  nav.topbar .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-block:14px;gap:16px;
+  }
+  .brand{
+    font-family:var(--font-mono);font-weight:600;font-size:14px;
+    letter-spacing:0.04em;display:flex;align-items:center;gap:8px;
+    white-space:nowrap;
+  }
+  .brand .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 0 10px var(--accent);
+  }
+  .navlinks{display:flex;gap:28px;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+  .navlinks a{
+    font-family:var(--font-mono);font-size:13px;color:var(--fg-muted);
+    text-decoration:none;letter-spacing:0.02em;
+    transition:color .15s ease;
+  }
+  .navlinks a:hover,.navlinks a:focus-visible{color:var(--accent-2)}
+  @media (max-width:720px){ .navlinks{display:none} }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;overflow:hidden;
+    padding-block:clamp(64px,12vw,128px) clamp(48px,8vw,80px);
+    border-bottom:1px solid var(--border);
+  }
+  canvas#net{
+    position:absolute;inset:0;width:100%;height:100%;
+    opacity:0.55;pointer-events:none;
+  }
+  .hero .wrap{position:relative;z-index:2}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:12.5px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--accent-2);
+    display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:'';width:22px;height:1px;background:var(--accent-2);
+    box-shadow:0 0 6px var(--accent-2);
+  }
+  h1.name{
+    font-family:var(--font-display);font-weight:700;
+    font-size:clamp(2.6rem,7vw,5rem);line-height:1.02;
+    letter-spacing:-0.01em;margin:0 0 18px;
+    text-wrap:balance;
+    background:linear-gradient(100deg,#f3f4fb 20%,var(--accent) 60%,var(--accent-2) 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero-id{display:flex;align-items:center;gap:24px;margin-bottom:18px}
+  .hero-id h1.name{margin:0}
+  .avatar{
+    width:104px;height:104px;border-radius:50%;object-fit:cover;flex:none;
+    border:2px solid var(--accent-2);
+    box-shadow:0 0 0 4px rgba(47,224,216,0.14),0 0 26px rgba(47,224,216,0.3);
+  }
+  @media (max-width:560px){
+    .hero-id{gap:14px}
+    .avatar{width:64px;height:64px}
+  }
+  .tagline{
+    font-size:clamp(1.05rem,2.3vw,1.3rem);color:var(--fg-muted);
+    max-width:640px;margin:0 0 22px;text-wrap:balance;
+  }
+  .status-pill{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--font-mono);font-size:12.5px;color:var(--ok);
+    background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.3);
+    border-radius:999px;padding:8px 16px;margin-bottom:34px;
+  }
+  .status-pill .pulse{
+    width:7px;height:7px;border-radius:50%;background:var(--ok);
+    box-shadow:0 0 0 0 rgba(74,222,128,0.6);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(74,222,128,0.55)}
+    70%{box-shadow:0 0 0 8px rgba(74,222,128,0)}
+    100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}
+  }
+  @media (prefers-reduced-motion: reduce){ .status-pill .pulse{animation:none} }
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px}
+  .btn{
+    font-family:var(--font-mono);font-size:14px;font-weight:500;
+    padding:13px 22px;border-radius:8px;text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--border-strong);
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
+    cursor:pointer;background:none;color:var(--fg);
+  }
+  .btn-primary{
+    background:linear-gradient(100deg,var(--accent),var(--accent-2));
+    color:#07080d;border:none;font-weight:600;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-ghost:hover{border-color:var(--accent-2);color:var(--accent-2)}
+
+  .stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--border);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;
+  }
+  @media (max-width:760px){ .stats{grid-template-columns:repeat(2,1fr)} }
+  .stat{
+    background:rgba(13,15,24,0.75);padding:22px 20px;
+  }
+  .stat .num{
+    font-family:var(--font-mono);font-weight:600;
+    font-size:clamp(1.3rem,2.8vw,1.8rem);color:var(--fg);
+    font-variant-numeric:tabular-nums;
+  }
+  .stat .label{
+    font-size:12.5px;color:var(--fg-muted);margin-top:6px;line-height:1.4;
+  }
+
+  /* ---------- section heads ---------- */
+  .sec-head{margin-bottom:44px}
+  .sec-head h2{
+    font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1.6rem,3.6vw,2.3rem);margin:0 0 14px;text-wrap:balance;
+  }
+  .sec-head p{color:var(--fg-muted);max-width:620px;margin:0}
+
+  /* ---------- about ---------- */
+  #about{border-bottom:1px solid var(--border)}
+  .about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:start}
+  @media (max-width:860px){ .about-grid{grid-template-columns:1fr} }
+  .about-body p{margin:0 0 18px;color:var(--fg-muted);font-size:1.02rem}
+  .about-body strong{color:var(--fg);font-weight:600}
+  .meta-line{
+    font-family:var(--font-mono);font-size:12.5px;color:var(--fg-faint);
+    border-top:1px solid var(--border);padding-top:16px;margin-top:8px;
+    line-height:1.8;
+  }
+  .about-side{display:flex;flex-direction:column;gap:24px}
+  .quote{
+    font-family:var(--font-display);font-weight:400;
+    font-size:1.3rem;line-height:1.4;color:var(--fg);
+    border-left:2px solid var(--accent-2);padding-left:22px;
+    margin:0;text-wrap:balance;
+  }
+  .quote span{color:var(--accent-2)}
+  .mini-card{
+    border:1px solid var(--border);border-radius:10px;padding:18px 20px;
+    background:var(--bg-panel);
+  }
+  .mini-card .k{font-family:var(--font-mono);font-size:11px;color:var(--accent-2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+  .mini-card div.v{font-size:0.88rem;color:var(--fg-muted);line-height:1.6}
+
+  /* ---------- pillars (cómo trabajo) ---------- */
+  #approach{border-bottom:1px solid var(--border)}
+  .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  @media (max-width:760px){ .pillars{grid-template-columns:1fr} }
+  .pillar{background:var(--bg-panel);padding:30px 28px}
+  .pillar.highlight{grid-column:1 / -1;background:var(--bg-panel-2)}
+  .pillar .glyph{
+    width:36px;height:36px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(139,123,255,0.1);border:1px solid rgba(139,123,255,0.25);
+    margin-bottom:18px;color:var(--accent-2);
+  }
+  .pillar h3{font-family:var(--font-display);font-size:1.05rem;font-weight:600;margin:0 0 10px}
+  .pillar p{color:var(--fg-muted);font-size:0.95rem;margin:0;max-width:640px}
+
+  /* ---------- strengths ---------- */
+  #strengths{border-bottom:1px solid var(--border)}
+  .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:860px){ .chips{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:560px){ .chips{grid-template-columns:1fr} }
+  .chip{
+    border:1px solid var(--border);border-radius:10px;padding:20px;
+    background:var(--bg-panel);
+  }
+  .chip .tag{
+    font-family:var(--font-mono);font-size:11px;color:var(--accent-2);
+    letter-spacing:0.06em;text-transform:uppercase;
+  }
+  .chip h4{margin:8px 0 6px;font-size:1rem;font-weight:600}
+  .chip p{margin:0;color:var(--fg-muted);font-size:0.88rem}
+
+  /* ---------- experience timeline ---------- */
+  #experience{border-bottom:1px solid var(--border)}
+  .timeline{position:relative;margin-left:8px;padding-left:28px;border-left:1px solid var(--border-strong)}
+  .tl-item{position:relative;padding-bottom:40px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{
+    content:'';position:absolute;left:-33px;top:4px;
+    width:10px;height:10px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--accent-2);
+  }
+  .tl-item.current::before{
+    background:var(--ok);border-color:var(--ok);box-shadow:0 0 0 4px rgba(74,222,128,0.18);
+  }
+  .tl-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:6px}
+  .tl-role{font-family:var(--font-display);font-weight:600;font-size:1.1rem}
+  .tl-dates{font-family:var(--font-mono);font-size:12px;color:var(--fg-faint)}
+  .tl-org{color:var(--accent-2);font-size:0.92rem;margin-bottom:10px}
+  .tl-desc{color:var(--fg-muted);font-size:0.94rem;margin:0 0 12px;max-width:660px}
+  .tl-tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tl-tags span{
+    font-family:var(--font-mono);font-size:11px;color:var(--fg-muted);
+    border:1px solid var(--border);border-radius:5px;padding:3px 8px;
+  }
+  .badge-current{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.05em;
+    color:#07080d;background:var(--ok);border-radius:4px;
+    padding:2px 7px;text-transform:uppercase;font-weight:600;
+  }
+
+  /* ---------- blog ---------- */
+  #blog{border-bottom:1px solid var(--border)}
+  .blog-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media (max-width:760px){ .blog-grid{grid-template-columns:1fr} }
+  .post{
+    border:1px solid var(--border);border-radius:12px;padding:26px;
+    background:var(--bg-panel);display:flex;flex-direction:column;gap:14px;
+    transition:border-color .15s ease;
+  }
+  .post:hover{border-color:var(--border-strong)}
+  .post-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .post-status{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.05em;
+    text-transform:uppercase;color:var(--warn);
+    border:1px solid rgba(255,138,101,0.35);border-radius:5px;
+    padding:3px 8px;white-space:nowrap;
+  }
+  .post h3{font-family:var(--font-display);font-size:1.08rem;font-weight:600;margin:0;text-wrap:balance}
+  .post p{color:var(--fg-muted);font-size:0.92rem;margin:0}
+  .post-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
+  .post-tags span{
+    font-family:var(--font-mono);font-size:10.5px;color:var(--accent-2);
+  }
+  .blog-note{
+    margin-top:28px;padding:18px 22px;border:1px dashed var(--border-strong);
+    border-radius:10px;color:var(--fg-muted);font-size:0.92rem;
+    text-align:center;
+  }
+
+  /* ---------- contact ---------- */
+  #contact{padding-block:clamp(56px,9vw,112px) clamp(40px,6vw,64px)}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px}
+  @media (max-width:760px){ .contact-grid{grid-template-columns:1fr} }
+  .contact-card{
+    border:1px solid var(--border);border-radius:12px;padding:22px;
+    background:var(--bg-panel);display:flex;flex-direction:column;gap:10px;
+  }
+  .contact-card .k{font-family:var(--font-mono);font-size:11px;color:var(--fg-faint);text-transform:uppercase;letter-spacing:0.06em}
+  .contact-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .contact-val{font-family:var(--font-mono);font-size:0.95rem;word-break:break-word}
+  .copy-btn{
+    font-family:var(--font-mono);font-size:12px;color:var(--fg-muted);
+    background:none;border:1px solid var(--border-strong);border-radius:6px;
+    padding:6px 10px;cursor:pointer;transition:all .15s ease;flex-shrink:0;
+  }
+  .copy-btn:hover{color:var(--accent-2);border-color:var(--accent-2)}
+  .link-out{text-decoration:none;color:var(--fg);display:flex;align-items:center;gap:6px}
+  .link-out:hover{color:var(--accent-2)}
+
+  footer{
+    border-top:1px solid var(--border);padding-block:28px;
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;
+    font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);
+  }
+
+  :focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+</style>
+
+<nav class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> JGP</div>
+    <ul class="navlinks">
+      <li><a href="#about">Sobre mí</a></li>
+      <li><a href="#approach">Cómo trabajo</a></li>
+      <li><a href="#experience">Experiencia</a></li>
+      <li><a href="#projects">Proyectos</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#contact">Contacto</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="net" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow">Engineering Manager · AI-driven engineering · Mendoza, Argentina</div>
+    <div class="hero-id">
+      <h1 class="name">Javier Gómez Piovano</h1>
+      <img class="avatar" src="data:image/jpeg;base64,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" alt="Foto de Javier Gómez Piovano" width="104" height="104">
+    </div>
+    <p class="tagline">Armo y escalo equipos de ingeniería autónomos, alineados a los objetivos de la organización y del área — cerca de la arquitectura y de las decisiones técnicas, sin perder de vista a las personas.</p>
+    <div class="status-pill"><span class="pulse"></span> Disponible para roles de Engineering Manager, Engineering Lead o Delivery Manager</div>
+    <div class="hero-ctas">
+      <a href="#experience" class="btn btn-primary">Ver experiencia</a>
+      <a href="#contact" class="btn btn-ghost">Hablemos</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">7+</div><div class="label">años liderando equipos de ingeniería</div></div>
+      <div class="stat"><div class="num">16</div><div class="label">personas lideradas en simultáneo (pico, 2 equipos)</div></div>
+      <div class="stat"><div class="num">US$1.000M+</div><div class="label">en activos bajo gestión de los productos que lideré</div></div>
+      <div class="stat"><div class="num">40%</div><div class="label">menos tiempo de codificación del equipo gracias a IA</div></div>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap about-grid">
+    <div class="about-body">
+      <div class="sec-head">
+        <h2>Sobre mí</h2>
+      </div>
+      <p>Soy <strong>Ingeniero en Sistemas de Información</strong> (UTN) y Engineering Manager, con más de 7 años liderando equipos de ingeniería en fintech y banca digital. Mi última etapa fue en <strong>Ueno Bank</strong> (Itti), donde lideré un equipo distribuido a cargo de productos de ahorro e inversión durante la etapa de mayor crecimiento del banco. Antes, en <strong>Ualá</strong>, llegué a liderar 16 personas en 2 equipos, y en <strong>Banco Supervielle</strong> fui uno de los primeros Scrum Masters de la transformación ágil del banco.</p>
+      <p>Vengo del desarrollo — full stack en .NET — y eso define cómo lidero: cerca de la arquitectura y de las decisiones técnicas, sin perder de vista a las personas ni al negocio. Reviso y apruebo RFCs junto al arquitecto, acompaño el desacoplo de sistemas monolíticos hacia microservicios orientados a eventos, y mido todo lo que puedo: lead time, cycle time, change failure rate, SLOs.</p>
+      <p>En Ueno Bank contribuí a escalar el core bancario hasta soportar 6.000 requests por minuto, en productos con más de USD 1.000 millones en activos. También lideré la adopción gradual de IA y GitHub Copilot en el ciclo de desarrollo — con una reducción medida del 40% en el tiempo de codificación — y construí un agente de soporte interno que resuelve 3 de cada 10 consultas del equipo.</p>
+      <p>Hoy estoy buscando mi próximo rol como Engineering Manager, Engineering Lead, Delivery Manager o Sr EM en compañías innovadoras — con particular interés en fintech, cripto y SaaS.</p>
+      <div class="meta-line">Español nativo · Inglés profesional (avanzado en lectura, nivel profesional en conversación y escritura) · Mendoza, Argentina — remoto</div>
+    </div>
+    <div class="about-side">
+      <blockquote class="quote">
+        "Lo que más me moviliza es tomar equipos y productos con desafíos reales de escala, y <span>ordenarlos</span>: procesos claros, arquitectura sólida, y un equipo al que no hay que decirle qué hacer — hay que consultarle qué necesita."
+      </blockquote>
+      <div class="mini-card">
+        <div class="k">Educación &amp; certificaciones</div>
+        <div class="v">Ingeniería en Sistemas de Información — UTN (FRM)<br>Certified ScrumMaster (CSM) — Scrum Alliance<br>CCNA — Cisco</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="approach">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Cómo trabajo</h2>
+      <p>Las ideas que se repiten en cada equipo y cada sistema que lidero.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21V12h6v9"/></svg>
+        </div>
+        <h3>Arquitectura antes que apuro</h3>
+        <p>Reviso y apruebo RFCs pensando en escala y confiabilidad desde el día uno — antes de que la arquitectura se convierta en el parche que nadie quiso escribir.</p>
+      </div>
+      <div class="pillar">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="17" r="2.2"/><circle cx="19" cy="17" r="2.2"/><path d="M12 10v3M7 15.5l3-1.8M17 15.5l-3-1.8"/></svg>
+        </div>
+        <h3>Liderazgo consultivo</h3>
+        <p>Armo equipos de profesionales autónomos: doy el ejemplo de cómo hacerlo y después hago seguimiento — no les digo qué hacer, les pregunto qué necesitan.</p>
+      </div>
+      <div class="pillar">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-5 4 3 5-7"/></svg>
+        </div>
+        <h3>Decisiones basadas en datos</h3>
+        <p>Sigo lead time, cycle time y change failure rate como brújula — bajé la tasa de rollback de 1 cada 3 deploys a 1 cada 10 reforzando el testing automatizado.</p>
+      </div>
+      <div class="pillar">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M9 15c.8.7 1.9 1 3 1s2.2-.3 3-1"/></svg>
+        </div>
+        <h3>IA como parte del proceso</h3>
+        <p>Busco automatizar y usar la IA en todo el proceso, desde la toma de requerimientos hasta las validaciones post-productivas — con RFCs, Copilot y un agente propio de soporte que resuelve 3 de cada 10 consultas con 70% menos tiempo de respuesta.</p>
+      </div>
+      <div class="pillar">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-4-3-8-6-8-10a4 4 0 0 1 8-2 4 4 0 0 1 8 2c0 4-4 7-8 10z"/></svg>
+        </div>
+        <h3>Cercanía con el equipo</h3>
+        <p>Esa cercanía con cada integrante me permite entender sus necesidades y fortalezas, y asignarle desafíos y tareas acorde a su perfil.</p>
+      </div>
+      <div class="pillar">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M14.8 9.2 12.8 12.8 9.2 14.8 11.2 11.2z"/></svg>
+        </div>
+        <h3>Orden, seguimiento y rumbo</h3>
+        <p>Organizo el trabajo para que todo el equipo sepa exactamente en qué estamos, cuándo lo vamos a tener y cuáles son los próximos pasos — comunicando todo el tiempo a los interesados.</p>
+      </div>
+      <div class="pillar" style="grid-column:1 / -1">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <h3>Visión estratégica</h3>
+        <p>Anticipo tendencias y las convierto en oportunidades concretas: no espero a tener problemas, los detecto a tiempo y tengo un plan para afrontarlos.</p>
+      </div>
+      <div class="pillar highlight">
+        <div class="glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <h3>Construyo con IA, no solo la gestiono</h3>
+        <p>En mis proyectos personales uso Claude y Claude Code para armar agentes y automatizaciones — por ejemplo, uno que identifica reclutadores IT con búsquedas activas afines a mi perfil y les escribe una presentación.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="strengths">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Fortalezas</h2>
+      <p>Lo que traigo a un equipo desde el primer día.</p>
+    </div>
+    <div class="chips">
+      <div class="chip">
+        <div class="tag">Liderazgo</div>
+        <h4>Equipos distribuidos</h4>
+        <p>Contraté a más de 10 personas y lideré hasta 16 en simultáneo — evaluaciones de desempeño, planes de carrera y promociones incluidos.</p>
+      </div>
+      <div class="chip">
+        <div class="tag">Delivery</div>
+        <h4>Entrega end-to-end</h4>
+        <p>Roadmap y OKRs con Producto, deuda técnica planificada y métricas DORA: lead time, cycle time, change failure rate.</p>
+      </div>
+      <div class="chip">
+        <div class="tag">Arquitectura</div>
+        <h4>Microservicios en AWS</h4>
+        <p>Acompañé el desacoplo de un core bancario hacia microservicios orientados a eventos — SQS, SNS, DynamoDB, Aurora.</p>
+      </div>
+      <div class="chip">
+        <div class="tag">Confiabilidad</div>
+        <h4>Operación e incidentes</h4>
+        <p>Incident commander, guardias y postmortems. Bajé la tasa de rollback de 1 en 3 a 1 en 10 despliegues.</p>
+      </div>
+      <div class="chip">
+        <div class="tag">IA aplicada</div>
+        <h4>AI-driven engineering</h4>
+        <p>Adopción de IA y Copilot en el ciclo de desarrollo, más un agente propio de soporte con 30% de resolución automática.</p>
+      </div>
+      <div class="chip">
+        <div class="tag">Stakeholders</div>
+        <h4>Banca y entes reguladores</h4>
+        <p>Integraciones con bancos centrales, KYC y plataformas de terceros — siempre como punto de contacto ante C-level.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Experiencia</h2>
+      <p>De desarrollador full stack a Engineering Manager, siempre en sistemas donde la disponibilidad importa.</p>
+    </div>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-head">
+          <span class="tl-role">Engineering Manager</span>
+          <span class="tl-dates">Dic 2023 — Sep 2026</span>
+        </div>
+        <div class="tl-org">Itti S.A.E.C.A. · Ueno Bank — Ahorro e Inversiones · Paraguay · Remoto</div>
+        <p class="tl-desc">Lideré un equipo distribuido de hasta 8 ingenieros a cargo de 3 productos de ahorro e inversión con más de USD 1.000M en activos. Armé 2 equipos en paralelo durante la etapa de mayor crecimiento del banco (de menos de 100 a ~1.200 personas remotas) y contraté a más de 10 personas. Contribuí al desacoplo del core bancario hacia microservicios orientados a eventos en AWS, escalándolo hasta 6.000 req/min con un SLO de 99.95% de disponibilidad y menos de 1000ms de respuesta. Armé el esquema de observabilidad, guardias y postmortems del equipo, y bajé la tasa de rollback de 1 en 3 a 1 en 10 deploys reforzando el testing automatizado. Revisé y aprobé RFCs junto al arquitecto, y lideré la adopción gradual de IA y GitHub Copilot en el ciclo de desarrollo — 40% menos tiempo de codificación y ~30% más velocidad de entrega — además de construir un agente de soporte interno que resuelve 3 de cada 10 consultas del equipo con 70% menos tiempo de respuesta.</p>
+        <div class="tl-tags"><span>Microservicios</span><span>AWS</span><span>SQS / SNS</span><span>DynamoDB</span><span>Aurora</span><span>GitHub Copilot</span><span>Incident Management</span><span>OKRs</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-head">
+          <span class="tl-role">Software Delivery Manager</span>
+          <span class="tl-dates">Abr 2022 — Nov 2023</span>
+        </div>
+        <div class="tl-org">Ualá, Argentina — Wealth</div>
+        <p class="tl-desc">Lideré la entrega de software en 2 equipos (16 ingenieros: 10 y 6) de la vertical Wealth, con un Agile Delivery Manager a cargo, coordinando roadmap y prioridades con Producto y trabajando con personas de Argentina, México y Colombia. Lideré integraciones con terceros vía API REST (Bitso, Coelsa, con requisitos de KYC) y mejoré la previsibilidad de entrega aplicando prácticas ágiles y métricas de delivery como lead time y cycle time.</p>
+        <div class="tl-tags"><span>Delivery</span><span>Agile</span><span>APIs REST</span><span>KYC</span><span>Wealth</span><span>OKRs</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-head">
+          <span class="tl-role">Agile Delivery Manager</span>
+          <span class="tl-dates">Sep 2021 — Mar 2022</span>
+        </div>
+        <div class="tl-org">Ualá, Argentina — Savings</div>
+        <p class="tl-desc">Guié a un equipo de 7 personas en prácticas ágiles asegurando entregas a tiempo, en alcance y con calidad. Lideré diseño técnico y discovery junto a stakeholders internos y externos.</p>
+        <div class="tl-tags"><span>Agile</span><span>Discovery</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-head">
+          <span class="tl-role">Technical Scrum Master</span>
+          <span class="tl-dates">Feb 2019 — Sep 2021</span>
+        </div>
+        <div class="tl-org">Banco Supervielle — Factoring / Tarjetas de Crédito / Estrategia BI</div>
+        <p class="tl-desc">Uno de los primeros Scrum Masters en liderar la transformación digital del banco, de waterfall a ágil. Coordiné equipos cross-funcionales en productos de Factoring (eCheq, APIs de tarjeta, descuento de cheques) y lideré la migración de servicios SOAP a APIs RESTful. En esta etapa empecé a liderar equipos de producto, antes del título formal de Delivery Manager.</p>
+        <div class="tl-tags"><span>Transformación ágil</span><span>SOAP → REST</span><span>Factoring</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-head">
+          <span class="tl-role">SR Full Stack Developer</span>
+          <span class="tl-dates">May 2016 — Ene 2019</span>
+        </div>
+        <div class="tl-org">Banco Supervielle — Equipo Factoring</div>
+        <p class="tl-desc">Referente técnico del producto Home Banking — frontend, backoffice y servicios backend consumidos por la app mobile de descuento de cheques. Stack .NET sobre Windows Server, y primera implementación de CI/CD de la compañía, pasando de despliegues manuales a un pipeline automatizado.</p>
+        <div class="tl-tags"><span>.NET</span><span>CI/CD</span><span>Home Banking</span></div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-head">
+          <span class="tl-role">Primeros años: Globalis, CME Offshore y Tiempo Soluciones</span>
+          <span class="tl-dates">2006 — 2016</span>
+        </div>
+        <div class="tl-org">SR Analyst Developer (Globalis) · SSR .NET Developer (CME Offshore, EE.UU.) · Director de TI</div>
+        <p class="tl-desc">Analyst developer para Banco Supervielle vía Globalis (2011–2016); único integrante del equipo en Argentina en CME Offshore, reportando en inglés a un manager en EE. UU. (2009–2011); y mi primera gestión de TI, en Tiempo Soluciones Informáticas (2006–2009), a cargo del soporte y la infraestructura tecnológica de la empresa.</p>
+        <div class="tl-tags"><span>.NET</span><span>Inglés profesional</span><span>Gestión de TI</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="availability" style="border-bottom:1px solid var(--border)">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Disponibilidad</h2>
+      <p>Mi situación actual, en una sola línea.</p>
+    </div>
+    <div class="mini-card" style="display:flex;flex-direction:column;gap:14px;max-width:720px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span class="badge-current">Disponible ahora</span>
+        <span class="tl-dates">Oct 2026 — hoy</span>
+      </div>
+      <div class="tl-org">Engineering Manager · Engineering Lead · Head of Engineering</div>
+      <p class="tl-desc" style="margin:0">Busco mi próximo desafío en compañías innovadoras, donde los desafíos sean tan importantes como el equipo y la forma de trabajar — con foco en fintech, cripto y SaaS. Si tu equipo está escalando sistemas críticos y quiere llevar la IA en serio al ciclo de ingeniería, hablemos.</p>
+      <div class="tl-tags"><span>Fintech</span><span>Cripto</span><span>SaaS</span><span>Remoto</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" style="border-bottom:1px solid var(--border)">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Proyectos</h2>
+      <p>Productos personales que armé de punta a punta, usando IA como parte central del proceso de desarrollo.</p>
+    </div>
+    <div class="blog-grid">
+      <article class="post">
+        <div class="post-top">
+          <h3>MiTurno — gestión de turnos para profesionales</h3>
+          <span class="badge-current">En producción</span>
+        </div>
+        <p>SaaS que diseñé y construí solo, con Claude Code como par de desarrollo. Los clientes reservan turno sin crear cuenta — por un link público, WhatsApp o SMS — y los profesionales gestionan agenda y disponibilidad desde una app mobile. Automaticé confirmaciones y recordatorios por WhatsApp (API de Meta), SMS (Twilio) y email (SendGrid), más sincronización de lectura con Google Calendar.</p>
+        <div class="tl-tags"><span>Go</span><span>PostgreSQL</span><span>Next.js</span><span>React Native / Expo</span><span>WhatsApp API</span><span>Twilio</span><span>SendGrid</span><span>Google Calendar API</span><span>Railway</span><span>Vercel</span></div>
+        <div class="contact-row" style="margin-top:4px">
+          <a class="link-out" href="https://miturno-xi.vercel.app" target="_blank" rel="noopener">
+            <span class="contact-val">miturno-xi.vercel.app</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="blog">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Blog técnico</h2>
+      <p>Notas de ingeniería en preparación — arquitectura, IA aplicada al desarrollo y liderazgo técnico, basadas en casos reales.</p>
+    </div>
+    <div class="blog-grid">
+      <article class="post">
+        <div class="post-top">
+          <h3>Descomponer un monolito bancario: lecciones de la migración a microservicios</h3>
+          <span class="post-status">Próximamente</span>
+        </div>
+        <p>Qué significa realmente "desacoplar" un core bancario en producción — orden de migración, contratos entre servicios y los riesgos que no aparecen hasta el primer pico de tráfico.</p>
+        <div class="post-tags"><span>#Arquitectura</span><span>#Microservicios</span><span>#Fintech</span></div>
+      </article>
+      <article class="post">
+        <div class="post-top">
+          <h3>Observabilidad e incident management en sistemas financieros críticos</h3>
+          <span class="post-status">Próximamente</span>
+        </div>
+        <p>Cómo armar un esquema de alertas que detecta antes de que el cliente note algo, y un proceso de post-mortem que realmente cambia cosas.</p>
+        <div class="post-tags"><span>#Observabilidad</span><span>#SRE</span><span>#Incidentes</span></div>
+      </article>
+      <article class="post">
+        <div class="post-top">
+          <h3>De referente técnico a líder de personas: la transición real</h3>
+          <span class="post-status">Próximamente</span>
+        </div>
+        <p>Lo que nadie cuenta sobre dejar de ser el que resuelve todo para ser el que arma el equipo que resuelve todo.</p>
+        <div class="post-tags"><span>#Liderazgo</span><span>#Carrera</span></div>
+      </article>
+      <article class="post">
+        <div class="post-top">
+          <h3>Decisiones de arquitectura bajo presión de negocio</h3>
+          <span class="post-status">Próximamente</span>
+        </div>
+        <p>Velocidad vs. solidez técnica: un marco simple para decidir cuándo pagar deuda técnica ahora y cuándo postergarla a conciencia.</p>
+        <div class="post-tags"><span>#Arquitectura</span><span>#Decisiones</span></div>
+      </article>
+    </div>
+    <div class="blog-note">Estoy preparando estos artículos — pronto subo el primero.</div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Hablemos</h2>
+      <p>Busco mi próximo rol en compañías innovadoras — fintech, cripto o SaaS. Estos son mis canales directos.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="k">Email</div>
+        <div class="contact-row">
+          <span class="contact-val" id="email-val">javigomez9@gmail.com</span>
+          <button class="copy-btn" data-copy="javigomez9@gmail.com" data-target="email-val">Copiar</button>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="k">LinkedIn</div>
+        <div class="contact-row">
+          <a class="link-out" href="https://www.linkedin.com/in/javigomezpiovano/" target="_blank" rel="noopener">
+            <span class="contact-val">in/javigomezpiovano</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="k">GitHub</div>
+        <div class="contact-row">
+          <a class="link-out" href="https://github.com/javigomez9" target="_blank" rel="noopener">
+            <span class="contact-val">github.com/javigomez9</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="k">Base</div>
+        <div class="contact-row">
+          <span class="contact-val">Mendoza, Argentina · Remoto</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;width:100%">
+    <span>Javier Gómez Piovano — Engineering Manager</span>
+    <span>Arquitectura, equipos e IA aplicada a ingeniería.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // Copy-to-clipboard with selection fallback
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy');
+      var done = function(){
+        var original = btn.textContent;
+        btn.textContent = 'Copiado';
+        setTimeout(function(){ btn.textContent = original; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackSelect(); });
+      } else {
+        fallbackSelect();
+      }
+      function fallbackSelect(){
+        var targetId = btn.getAttribute('data-target');
+        var el = targetId ? document.getElementById(targetId) : null;
+        if (el) {
+          var range = document.createRange();
+          range.selectNodeContents(el);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      }
+    });
+  });
+
+  // Neural network canvas background in the hero
+  var canvas = document.getElementById('net');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var hero = canvas.closest('.hero');
+  var W, H, dpr;
+  var nodes = [];
+  var NODE_COUNT = 46;
+  var MAX_DIST = 150;
+
+  function resize(){
+    var rect = hero.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = rect.width; H = rect.height;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function initNodes(){
+    nodes = [];
+    for (var i=0;i<NODE_COUNT;i++){
+      nodes.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        vx: (Math.random()-0.5)*0.18,
+        vy: (Math.random()-0.5)*0.18,
+        r: Math.random()*1.6+1
+      });
+    }
+  }
+
+  function step(){
+    ctx.clearRect(0,0,W,H);
+    for (var i=0;i<nodes.length;i++){
+      var n = nodes[i];
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > W) n.vx *= -1;
+      if (n.y < 0 || n.y > H) n.vy *= -1;
+    }
+    for (var i=0;i<nodes.length;i++){
+      for (var j=i+1;j<nodes.length;j++){
+        var a = nodes[i], b = nodes[j];
+        var dx = a.x-b.x, dy = a.y-b.y;
+        var dist = Math.sqrt(dx*dx+dy*dy);
+        if (dist < MAX_DIST){
+          var op = (1 - dist/MAX_DIST) * 0.35;
+          ctx.strokeStyle = 'rgba(139,123,255,' + op + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (var i=0;i<nodes.length;i++){
+      var n = nodes[i];
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(47,224,216,0.65)';
+      ctx.fill();
+    }
+    if (!reduceMotion) requestAnimationFrame(step);
+  }
+
+  resize();
+  initNodes();
+  if (reduceMotion){
+    step();
+  } else {
+    requestAnimationFrame(step);
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function(){ resize(); initNodes(); }, 150);
+  });
+})();
+</script>
+
+</body></html>
